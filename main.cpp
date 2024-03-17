@@ -3,6 +3,10 @@
 #include <map>
 #include <random>
 #include <chrono>
+#include <cstdlib>
+#include <vector>
+#include <sstream>
+#include <iomanip>
 
 class BankAccount{
     std::string accountNumber;
@@ -149,16 +153,51 @@ int main(int, char**){
     Bank bank(&storage);
 
     const int AntalAccounts =  1000000;
-
+    const int randRange = 2000000;
+    std::vector<std::string> accNums;
 
     std::string sFirst = ""; 
     std::string sLast = ""; 
     std::string sNotFound = "notfound"; 
 
+    std::string accountNumber;
+
+    int noDuplicate = 0;
+    int preAccNum = 0;
+
     std::cout << "INITIALIZE: " << std::endl;
     auto startTime = std::chrono::high_resolution_clock::now();
     for(int i = 0;i < AntalAccounts; i++){
-        std::string accountNumber =  std::to_string(i);
+        //Här vill jag ha in koden för att padda nummren
+        //1: Random nummer inom en range
+        preAccNum = (rand() % randRange);
+        //2 Padda med nollor
+        //2.11 skapa stream
+        std::stringstream stream;
+        //2.12 fyll stream med 0, 10 bredd, och vår random int
+        stream << std::setfill('0') << std::setw(10) << preAccNum;
+        //2.13 stream in till vår string
+        stream >> accountNumber;
+        // 2.4 Jämför denna string med alla i vectorn
+        while (noDuplicate == 0)
+        {
+            for (int j = 0; j < accNums.size(); j++)
+            {
+                if (accountNumber == accNums[j])
+                {
+                    std::string accountNumber = std::to_string(rand() % randRange);
+                    break;
+                }
+                else
+                {
+                    noDuplicate = 1;
+                }
+                
+            }
+        }
+        //1.5: Lägg till numret i en vektor
+        accNums.push_back(accountNumber);
+
         if(i == 0){
             sFirst = accountNumber;
         }
@@ -170,6 +209,10 @@ int main(int, char**){
 
     auto endTime = std::chrono::high_resolution_clock::now();
     std::cout << "INIT Took: " << std::chrono::duration_cast<std::chrono::milliseconds>(endTime    - startTime).count() << " milliseconds" << std::endl;
+
+    //Här sorterar vi
+    std::sort()
+
 
     startTime = std::chrono::high_resolution_clock::now();
     BankAccount *p = bank.getAccount(sFirst);
